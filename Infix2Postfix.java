@@ -14,6 +14,7 @@ public class Infix2Postfix {
 		// 버퍼 객체 생성 
 		StringBuffer buf = new StringBuffer();
 		//has.MoreTokens()는 StringTokenizer의 객체가 더 이상 토큰을 반환할 수 있는 지에 따라 true false를 반환.
+		// 음수를 처리하기 위해, 음수라고 취급하는 경우(1.수식의 시작이 -인 경우 2. 여는괄호 '('다음에 -가 나오는 경우)를 처리 아래는 수식의 시작이 -인 경우의 처리이다.
 		if(st.hasMoreTokens()) {
 			String FirstTok = st.nextToken();
 			if(FirstTok.equals("-")) {
@@ -41,6 +42,8 @@ public class Infix2Postfix {
 			String tok = st.nextToken();
 			//opType은 아래에서 정의한, 연산자에 대해서 각각 1,2,3,4를 부여하는 함수이다.
 			if(opType(tok) >= 0) {
+				// 아래는 음수처리의 2번쨰 경우(여는 괄호 뒤에 바로 -가 나오는 경우)의 처리이다. 여는 괄호가 나왔을 때, 다음 토큰을 확인해서 -인 경우 그 다음 토큰인 숫자과 함께 음수로 출력. 
+				//-가 아니었을 경우엔 다른 연산자인 경우이므로, 스택에 추가.
 				if (tok.equals("(")) {
 					stack.push(tok.trim());
 					String nextToken = st.nextToken();
