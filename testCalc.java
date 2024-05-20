@@ -1,12 +1,22 @@
 package test;
-
 import java.awt.EventQueue;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
+
+//UI정리
+	// 입출력텍스트필드
+	// 1~9 버튼 구역
+	// 'c','0','=' 버튼 구역
+	// 연산기호 버튼 구역
+	// 상태텍스트필드
+
 
 public class testCalc extends JFrame {
 
@@ -15,6 +25,8 @@ public class testCalc extends JFrame {
 	private JTextField textField;
 	private String exp ="";
 	private String op = "/*+-()";
+	private JTextField txtStatus;
+	private List<JButton> buttons = new ArrayList<>();
 	
 	/**
 	 * Launch the application.
@@ -50,16 +62,29 @@ public class testCalc extends JFrame {
 		calc_head.setLayout(new BorderLayout(0, 0));
 		
 		
-		//계산기 출력부분
+		//계산기 입출력필드
 		textField = new JTextField();
 		textField.setHorizontalAlignment(SwingConstants.RIGHT);
 		calc_head.add(textField);
-		textField.setText("0");
+		textField.setText("");
 		textField.setColumns(10);
 		
+		
+		//계산기 상태필드
 		JPanel calc_bottom = new JPanel();
 		contentPane.add(calc_bottom, BorderLayout.SOUTH);
+		calc_bottom.setLayout(new BorderLayout(0, 0));
 		
+		txtStatus = new JTextField();
+		txtStatus.setText("입력대기");
+		txtStatus.setEditable(false);
+		calc_bottom.add(txtStatus);
+		txtStatus.setColumns(10);
+		
+		
+		
+		
+		//계산기 버튼 필드
 		JPanel calc_body = new JPanel();
 		contentPane.add(calc_body, BorderLayout.CENTER);
 		calc_body.setLayout(new GridLayout(4, 3, 10, 10));
@@ -80,8 +105,10 @@ public class testCalc extends JFrame {
     				textField.setText(exp);
     			}
     		});
-            calc_body.add(button); 
+            calc_body.add(button);
+            buttons.add(button);
         }
+		
 		
 		
 		// 0,c,= 버튼 생성(위치 : calc_body)
@@ -90,6 +117,8 @@ public class testCalc extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				exp = "";
 				textField.setText(exp);
+				txtStatus.setText("입력대기");
+				setButtonsEnabled(true); // 모든 버튼을 활성화
 			}
 		});
 		calc_body.add(btn_clear);
@@ -102,15 +131,20 @@ public class testCalc extends JFrame {
 			}
 		});
 		calc_body.add(btn_0);
+		buttons.add(btn_0);
 		
 		JButton btn_return = new JButton("=");
 		btn_return.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				exp = String.valueOf(postfix.evaluate(postfix.toPostfix(exp)));
+				exp = String.valueOf(Postfix_to_result.Evaluate(Postfix_to_result.Infix_to_Postfix(exp)));		//연산수행	
 				textField.setText(exp);
+				txtStatus.setText("계산완료");
+				setButtonsEnabled(false); // C 버튼 외 모든 버튼 비활성화
+                btn_clear.setEnabled(true); // C 버튼은 항상 활성화
 			}
 		});
 		calc_body.add(btn_return);
+		buttons.add(btn_return);
 		
 		
 		
@@ -125,8 +159,15 @@ public class testCalc extends JFrame {
     			}
     		});
             calc_op.add(button); 
+            buttons.add(button);
         }
-		
 	}
+	
+	//버튼 활성화함수
+	private void setButtonsEnabled(boolean enabled) {
+        for (JButton button : buttons) {
+            button.setEnabled(enabled);
+        }
+    }
 
 }
